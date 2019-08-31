@@ -1,6 +1,6 @@
-import {Player} from "player.js";
+import Player from "./player.js";
 
-var MAZE = [];
+var MAZE;
 var MAZE_SIZE = 20;
 var POP = [];
 var NB_POP = 1;
@@ -26,22 +26,24 @@ var TOP_SELECT = 20;
 function createWorld(){
 
     //Creating the world
+    MAZE = new Array(MAZE_SIZE);
     for (let y = 0; y < MAZE_SIZE; y++) {
+        MAZE[y] = new Array(MAZE_SIZE);
         for (let x = 0; x < MAZE_SIZE; x++) {
-            MAZE[x][y] = 0;
+            MAZE[y][x] = 0;
         } 
     }
 
     //End of the game
     let x_end = END_POS.x;
     let y_end = END_POS.y;
-    MAZE[x_end][y_end] = 1;
+    MAZE[y_end][x_end] = 1;
 
     //Creating walls
     WALLS.forEach(element => {
         let x = element.x;
         let y = element.y;
-        MAZE[x][y] = 2;
+        MAZE[y][x] = 2;
     });
 
     console.log(MAZE);
@@ -50,6 +52,10 @@ function createWorld(){
     for (let index = 0; index < NB_POP; index++) {
         POP.push(new Player());
     }
+
+    console.log(POP);
 }
+
+createWorld();
 
 
