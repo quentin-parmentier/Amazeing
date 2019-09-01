@@ -1,4 +1,4 @@
-export class Player{
+export default class Player{
 
     constructor(max_size) {
         this.x = 0;
@@ -6,61 +6,71 @@ export class Player{
         this.isAlive = true;
         this.color = "#6f6f6f";
         this.genome = [];
+        this.score = 0;
 
         //Create the steps 0:top, 1:right, 2:bot, 3:left
         for (let index = 0; index < max_size; index++) {
-            genome[index] = Math.floor(Math.random() * Math.floor(4));
+            this.genome[index] = Math.floor(Math.random() * Math.floor(4));
         }
 
     }
 
-    set moove(fnc, walls, maze_size){
+    moove(fnc, walls, maze_size){
 
         switch (fnc) {
             case 0:
-                goTop();
+                this.goTop();
                 break;
             
             case 1:
-                goRight();
+                this.goRight();
                 break;
             
             case 2:
-                goBot();
+                this.goBot();
                 break;
                 
             case 3:
-                goLeft();
+                this.goLeft();
                 break;
 
         }
 
-        var found = walls.find(function(element) {
+        var found = walls.find((element) => {
             return element.x == this.x && element.y == this.y;
         });
 
-        if(x>maze_size || y>maze_size || x<0 || y<0 || found != undefined){
+        if(this.x>maze_size || this.y>maze_size || this.x<0 || this.y<0 || found != undefined){
             this.isAlive = false;
         }
 
+        return this.isAlive;
     }
 
-    set goTop(){
+    goTop(){
         this.y -= 1;
     }
 
     
-    set goRight(){
+    goRight(){
         this.x += 1;
     }
 
     
-    set goBot(){
+    goBot(){
         this.y += 1;
     }
 
     
-    set goLeft(){
+    goLeft(){
         this.x -= 1;
+    }
+
+    get getGenome() {
+        return this.genome;
+    }
+
+    calculScore(end_pos,step){
+
     }
 }
