@@ -128,7 +128,7 @@ function play(){
         let topTwenty = getTop();
         console.log("Le TOP Niveau")
         console.log(topTwenty)
-        POP = [];
+        POP = new Array();
 
         creatingBabies(topTwenty);
     }
@@ -139,7 +139,8 @@ function getTop(){
     var listTop = new Array();
 
     POP.sort((a, b) => a.getScore > b.getScore ? 1 : -1);
-    return POP.slice(0,TOP_SELECT);
+    listTop = POP.slice(0,TOP_SELECT);
+    return return listTop;
 
 }
 
@@ -149,6 +150,7 @@ function creatingBabies(topTwenty){
         let genome = element.getGenome;
         let newPlayer = new Player(MAX_STEP)
         newPlayer.setGenome = genome;
+        console.log(POP)
         POP.push(newPlayer)
     });
 
