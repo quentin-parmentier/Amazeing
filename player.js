@@ -7,6 +7,7 @@ export default class Player{
         this.color = "#6f6f6f";
         this.genome = [];
         this.score = 0;
+        this.deadStep = 0;
 
         //Create the steps 0:top, 1:right, 2:bot, 3:left
         for (let index = 0; index < max_size; index++) {
@@ -15,7 +16,7 @@ export default class Player{
 
     }
 
-    moove(fnc, walls, maze_size){
+    moove(fnc, walls, maze_size, end_pos, step){
 
         switch (fnc) {
             case 0:
@@ -41,36 +42,54 @@ export default class Player{
         });
 
         if(this.x>maze_size || this.y>maze_size || this.x<0 || this.y<0 || found != undefined){
+            this.deadStep = step;
             this.isAlive = false;
+        }
+
+        if(end_pos.x == this.x && end_pos.y == this.y){
+            return -1;
         }
 
         return this.isAlive;
     }
 
     goTop(){
-        this.y -= 1;
+        this.x -= 1;
     }
 
     
     goRight(){
-        this.x += 1;
-    }
-
-    
-    goBot(){
         this.y += 1;
     }
 
     
+    goBot(){
+        this.x += 1;
+    }
+
+    
     goLeft(){
-        this.x -= 1;
+        this.y -= 1;
     }
 
     get getGenome() {
         return this.genome;
     }
 
-    calculScore(end_pos,step){
+    get getIsAlive(){
+        return this.isAlive;
+    }
 
+    get getScore(){
+        return this.score;
+    }
+
+    set setGenome(newGenome){
+        this.genome = newGenome;
+    }
+
+    calculScore(end_pos){
+        let distance = Math.abs(this.x - end_pos.x) + Math.abs(this.y - end_pos.y)
+        this.score = distance*10 + this.deadStep
     }
 }

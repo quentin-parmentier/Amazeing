@@ -3,7 +3,7 @@ import Player from "./player.js";
 var MAZE;
 var MAZE_SIZE = 20;
 var POP = [];
-var NB_POP = 500;
+var NB_POP = 100;
 var START_POS = [];
 var END_POS = {x:19,y:19};
 var WALLS = [{x:2,y:2},{x:2,y:3},{x:1,y:3},{x:5,y:7},{x:8,y:10},{x:9,y:10}];
@@ -14,7 +14,7 @@ var WALLS = [{x:2,y:2},{x:2,y:3},{x:1,y:3},{x:5,y:7},{x:8,y:10},{x:9,y:10}];
 var ISA = true;
 
 var GAME_ENDED = false;
-var GENERATION = 1;
+var GENERATION = 0;
 
 var STEP = 0;
 // MAx size of genom
@@ -46,14 +46,10 @@ function createWorld(){
         MAZE[y][x] = 2;
     });
 
-    console.log(MAZE);
-
     //Creating the population
     for (let index = 0; index < NB_POP; index++) {
         POP.push(new Player(MAX_STEP));
     }
-
-    console.log(POP);
 }
 
 function renderWorld(){
@@ -87,21 +83,107 @@ function renderPlayers(){
 }
 
 function play(){
-    while(ISA && STEP < MAX_STEP){
-        ISA = false;
 
+    while(GENERATION < 5 && !GAME_ENDED){
+
+        STEP = 0;
+        ISA = true;
+        GENERATION ++;
+        console.log("GENERATION : " + GENERATION)
+
+        while(ISA && STEP < MAX_STEP && !GAME_ENDED){
+
+            ISA = false;
+
+            POP.forEach(element => {
+
+                if(element.getIsAlive){
+                    let fncMoove = element.getGenome[STEP];
+                    let isAlive = element.moove(fncMoove, WALLS, MAZE_SIZE, END_POS, STEP);
+
+                    if(isAlive == -1){
+                        GAME_ENDED = true;
+                        console.log(element);
+                    }
+
+                    if(!ISA && !GAME_ENDED){
+                        ISA = isAlive;
+                    }
+                }
+            });
+
+            renderPlayers();
+            STEP++;
+        }
+
+
+        //We can calcul the score now
         POP.forEach(element => {
-            let fncMoove = element.getGenome[STEP];
-            let isAlive = element.moove(fncMoove, WALLS, MAZE_SIZE);
-            console.log(isAlive)
-            if(!ISA){
-                ISA = isAlive;
-            }
+           element.calculScore(END_POS); 
         });
 
-        renderPlayers();
-        STEP++;
+        console.log("Tous le monde est mort")
+        console.log(POP)
+
+        let topTwenty = getTop();
+        console.log("Le TOP Niveau")
+        console.log(topTwenty)
+        POP = [];
+
+        creatingBabies(topTwenty);
     }
+}
+
+function getTop(){
+
+    var listTop = new Array();
+
+    POP.sort((a, b) => a.getScore > b.getScore ? 1 : -1);
+    return POP.slice(0,TOP_SELECT);
+
+}
+
+function creatingBabies(topTwenty){
+
+    topTwenty.forEach(element => {
+        let genome = element.getGenome;
+        let newPlayer = new Player(MAX_STEP)
+        newPlayer.setGenome = genome;
+        POP.push(newPlayer)
+    });
+
+    for (let index = 0; index < NB_POP - TOP_SELECT; index++) {
+        let newPlayer = new Player(MAX_STEP)
+        let newGenome = new Array();
+        let parentOne = POP[Math.floor(Math.random() * Math.floor(TOP_SELECT))];
+        let parentTwo = POP[Math.floor(Math.random() * Math.floor(TOP_SELECT))];
+        let firstPart = Math.floor(Math.random() * Math.floor(2));
+
+        if(firstPart == 0){
+            parentOne.getGenome.slice(0,MAX_STEP/2).forEach(element => {
+                newGenome.push(element);
+            });
+
+            parentTwo.getGenome.slice(MAX_STEP/2,MAX_STEP).forEach(element => {
+                newGenome.push(element);
+            });
+        }else{
+            parentTwo.getGenome.slice(0,MAX_STEP/2).forEach(element => {
+                newGenome.push(element);
+            });
+
+            parentOne.getGenome.slice(MAX_STEP/2,MAX_STEP).forEach(element => {
+                newGenome.push(element);
+            });
+        }
+        
+        newPlayer.setGenome = newGenome;
+        POP.push(newPlayer)
+    }
+
+    console.log("Les bébés sont fait !")
+    console.log(POP)
+
 }
 
 createWorld();
