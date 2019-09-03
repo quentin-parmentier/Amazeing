@@ -84,7 +84,7 @@ function renderPlayers(){
 
 function play(){
 
-    while(GENERATION < 5 && !GAME_ENDED){
+    while(!GAME_ENDED){
 
         STEP = 0;
         ISA = true;
@@ -115,7 +115,6 @@ function play(){
             renderPlayers();
             STEP++;
         }
-
 
         //We can calcul the score now
         POP.forEach(element => {
@@ -178,6 +177,15 @@ function creatingBabies(topTwenty){
                 newGenome.push(element);
             });
         }
+
+        newGenome.forEach((element,index) => {
+
+            let rdm = Math.random();
+            if(rdm <= 0.05){
+                let newChrom = Math.floor(Math.random() * Math.floor(4));
+                newGenome[index] = newChrom;
+            }
+        });
         
         newPlayer.setGenome = newGenome;
         POP.push(newPlayer)
