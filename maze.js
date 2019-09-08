@@ -6,7 +6,8 @@ var POP = [];
 var NB_POP = 100;
 var START_POS = [];
 var END_POS = {x:19,y:19};
-var WALLS = [{x:5,y:0},{x:5,y:1},{x:5,y:2},{x:2,y:2},{x:2,y:3},{x:1,y:3},{x:5,y:7},{x:8,y:5},{x:9,y:5},{x:8,y:6},{x:9,y:6},{x:8,y:10},{x:9,y:10},{x:12,y:9},{x:12,y:10},{x:12,y:11},{x:12,y:12},{x:12,y:13},{x:12,y:14}];
+//var WALLS = [{x:5,y:0},{x:5,y:1},{x:5,y:2},{x:2,y:2},{x:2,y:3},{x:1,y:3},{x:5,y:7},{x:8,y:5},{x:9,y:5},{x:8,y:6},{x:9,y:6},{x:8,y:10},{x:9,y:10},{x:12,y:9},{x:12,y:10},{x:12,y:11},{x:12,y:12},{x:12,y:13},{x:12,y:14}];
+var WALLS = [];
 
 //Boucle Vars
 
@@ -64,7 +65,7 @@ function renderWorld(){
             }else if(MAZE[y][x] == 1){
                 maze += "<td class=end id="+x+"_"+y+">"
             }else{
-                maze += "<td id="+x+"_"+y+">"
+                maze += "<td class=case id="+x+"_"+y+">"
             }
             maze += "</td>"
         }
@@ -82,8 +83,19 @@ function renderPlayers(){
     });
 }
 
-function play(){
+function showwinner(element){
+    $("#world").remove();
+    renderWorld();
+    GAME_ENDED = false;
+    element.x = 0;
+    element.y = 0;
+    POP = new Array();
+    POP.push(element);
+    play();
+}
 
+function play(){
+    let winner = null;
     while(!GAME_ENDED){
 
         STEP = 0;
@@ -103,7 +115,9 @@ function play(){
 
                     if(isAlive == -1){
                         GAME_ENDED = true;
+                        console.log("On a un gagnant")
                         console.log(element);
+                        winner = element;
                     }
 
                     if(!ISA && !GAME_ENDED){
@@ -131,6 +145,8 @@ function play(){
         console.log(POP)
         creatingBabies(topTwenty);
     }
+
+    showwinner(winner);
 }
 
 function getTop(){
@@ -201,6 +217,19 @@ renderWorld();
 
 renderPlayers();
 
-play();
+$("#btn_start").click(function(){
+    play();
+})
+
+$(".case").click(function(){
+    console.log(this.id)
+    $("#"+this.id).addClass("wall")
+    let pos = this.id.split('_'); //0 = y / 1 = x
+    let new_wall = {x:pos[0],y:pos[1]}
+    MAZE[pos[1]][pos[0]] = 2;
+    WALLS.push(new_wall)
+    console.log(WALLS)
+})
+
 
 
